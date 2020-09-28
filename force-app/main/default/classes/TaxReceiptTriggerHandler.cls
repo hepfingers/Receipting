@@ -1,7 +1,7 @@
 /**
  * @description       : Trigger handler for Tax_Receipt__c
  * @author            : kevin@kevinwaites.com
- * @last modified on  : 09-26-2020
+ * @last modified on  : 09-27-2020
  * @last modified by  : kevin@kevinwaites.com
  * Modifications Log 
  * Ver   Date         Author                               Modification
@@ -63,14 +63,14 @@ public with sharing class TaxReceiptTriggerHandler {
                             tr.To__c = oppty.Account.Name;
                         }
     
-                        if(Eligible_Amount__c > 0) {
+                        if(oppty.Eligible_Amount__c > 0) {
                             Tax_Receipt_Number__c trn = New Tax_Receipt_Number__c( Tax_Receipt__c = tr.Id);
                             tr.Receipt_Number__c = trn.Name;
-                            trnList.add trn;
+                            trnList.add(trn);
                         } else {
                             Business_Receipt_Number__c brn = New Business_Receipt_Number__c( Tax_Receipt__c = tr.Id);
                             tr.Receipt_Number__c = brn.Name;
-                            brnList.add brn;
+                            brnList.add(brn);
                         }
                         
                         // TODO: Add to Tax Receipt
@@ -88,10 +88,10 @@ public with sharing class TaxReceiptTriggerHandler {
                 }
             }
     
-            if(trnList.length > 1) {
+            if(!trnList.isEmpty()) {
                 // Strip fields that are not creatable
                 SObjectAccessDecision decision = Security.stripInaccessible(
-                    AccesType.CREATABLE,
+                    AccessType.CREATABLE,
                     trnList);
                 try{
                     insert decision.getRecords();
@@ -103,10 +103,10 @@ public with sharing class TaxReceiptTriggerHandler {
                 System.debug(decision.getRemovedFields());
             }
             
-            if(brnList.length > 1) {
+            if(!brnList.isEmpty()) {
                 // Strip fields that are not creatable
                 SObjectAccessDecision decision = Security.stripInaccessible(
-                    AccesType.CREATABLE,
+                    AccessType.CREATABLE,
                     brnList);
                 try{
                     insert decision.getRecords();
